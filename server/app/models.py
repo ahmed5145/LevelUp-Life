@@ -26,7 +26,7 @@ class UsersSchema(mm.SQLAlchemyAutoSchema):
 class Tasks(db.Model):
     __tablename__ = "tasks"
     id= db.Column(db.Integer, primary_key=True)
-    user_id= db.Column(db.Integer, db.Foreignkey("user.id"))
+    user_id= db.Column(db.Integer, db.ForeignKey("users.id"))
     title= db.Column(db.String, nullable=False)
     description= db.Column(db.String)
     difficulty= db.Column(db.Integer, default=1)
@@ -46,7 +46,7 @@ class TasksSchema(mm.SQLAlchemyAutoSchema):
 class Habits(db.Model):
     __tablename__= "habits"
     id= db.Column(db.Integer, primary_key=True)
-    user_id= db.Column(db.Integer, db.ForeignKey("user.id"))
+    user_id= db.Column(db.Integer, db.ForeignKey("users.id"))
     description= db.Column(db.String)
     good_or_bad= db.Column(db.Boolean, default=True)
     streak= db.Column(db.Integer, default=0)
@@ -63,7 +63,7 @@ class HabitsSchema(mm.SQLAlchemyAutoSchema):
 # A Daily is a task that you set to be done daily/ reoccuring task
 class Dailies(db.Model):
     id= db.Column(db.Integer, primary_key=True)
-    user_id= db.Column(db.Integer, db.ForeignKey("user.id"))
+    user_id= db.Column(db.Integer, db.ForeignKey("users.id"))
     title= db.Column(db.String, nullable=False)
     description= db.Column(db.String)
     difficulty= db.Column(db.Integer, default=1)
