@@ -23,23 +23,26 @@ async function getUserInfo(responseCode) {
   }
 }
 
-export default function GoogleLogin() {
+export default function GoogleLogin({ onLoginSuccess }) {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({});
-  const [testMessage, setTestMessage] = useState(''); 
 
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (responseCode) => {
       const loginDetails = await getUserInfo(responseCode);
-      setLoggedIn(true);
-      setUser(loginDetails.user);
+      if (loginDetails) {
+        setLoggedIn(true);
+        setUser(loginDetails.user);
+        onLoginSuccess();
+      }
     },
   });
 
   const handleLogout = () => {
     setLoggedIn(false);
     setUser({});
+    // Optional: We can clear the access token cookie here
   };
 
 

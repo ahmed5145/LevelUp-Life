@@ -12,6 +12,7 @@ from config import db, mm, create_app
 from models import Users
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
 from flask_cors import CORS
+from tasks_routes import tasks_bp
 
 app = create_app()
 CORS(app)
@@ -25,6 +26,8 @@ GOOGLE_DISCOVERY_URL = (
 app.config['JWT_SECRET_KEY']= os.getenv("JWT_SECRET_KEY")
 app.config['JWT_TOKEN_LOCATION']= ['cookies']
 jwt= JWTManager(app)
+
+app.register_blueprint(tasks_bp)
 
 @app.route("/test")
 def main():
