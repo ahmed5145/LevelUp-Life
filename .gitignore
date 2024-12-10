@@ -5,3 +5,4 @@ __pycache__
 LevelUpDb.sqlite3
 test.py
 .venv
+.env.test

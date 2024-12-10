@@ -1,4 +1,4 @@
-from config import db, mm
+from app.config import db, mm
 from flask_login import UserMixin
 
 class Users(UserMixin, db.Model):
