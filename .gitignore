@@ -1,3 +1,6 @@
 node_modules
 venv
 .flaskenv
+__pycache__
+LevelUpDb.sqlite3
+test.py

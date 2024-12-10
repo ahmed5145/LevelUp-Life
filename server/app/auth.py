@@ -1,6 +1,5 @@
-import json
 import os
-from flask import Flask, redirect, request, url_for, Blueprint
+from flask import Flask, redirect, request, url_for, Blueprint, jsonify
 from flask_login import (
     LoginManager,
     current_user,
@@ -8,93 +7,60 @@ from flask_login import (
     login_user,
     logout_user,
 )
-from oauthlib.oauth2 import WebApplicationClient
 import requests
 from config import db, mm, create_app
 from models import Users
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
+from flask_cors import CORS
 
-auth = Blueprint("auth", __name__, url_prefix="/")
 app = create_app()
-
+CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
 
-login_manager= LoginManager()
-login_manager.init_app(app)
+app.config['JWT_SECRET_KEY']= os.getenv("JWT_SECRET_KEY")
+app.config['JWT_TOKEN_LOCATION']= ['cookies']
+jwt= JWTManager(app)
 
-client= WebApplicationClient(GOOGLE_CLIENT_ID)
+@app.route("/test")
+def main():
+    return jsonify("Test done"), 200
 
-@login_manager.user_loader
-def load_user(user_id):
-    return Users.query.get(user_id)
-
-@app.route("/")
-def index():
-    if current_user.is_authenticated:
-        return f"<p>Hello {current_user.username}</p><a class='button' href='/logout'>Logout</a>"
-    else:
-        return '<a class="button" href="/login">Google Login</a>'
-    
-def get_google_provider_cfg():
-    return requests.get(GOOGLE_DISCOVERY_URL).json()
-
-@app.route("/login")
+@app.route('/google/login', methods=['POST'])
 def login():
-    google_provider_cfg = get_google_provider_cfg()
-    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
-    request_uri = client.prepare_request_uri(
-        authorization_endpoint,
-        redirect_uri=request.base_url + "/callback",
-        scope=["openid", "email", "profile"],
-    )
-    return redirect(request_uri)
+    auth_code = request.get_json()['code']
+    data = {
+        'code': auth_code,
+        'client_id': GOOGLE_CLIENT_ID,
+        'client_secret': GOOGLE_CLIENT_SECRET,
+        'redirect_uri': 'postmessage',
+        'grant_type': 'authorization_code'
+    }
 
-@app.route("/login/callback")
-def callback():
-    code = request.args.get("code")
-    google_provider_cfg = get_google_provider_cfg()
-    token_endpoint = google_provider_cfg["token_endpoint"]
-    token_url, headers, body = client.prepare_token_request(
-        token_endpoint,
-        authorization_response=request.url,
-        redirect_url=request.base_url,
-        code=code
-    )
-    token_response = requests.post(
-        token_url,
-        headers=headers,
-        data=body,
-        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
-    )
-    client.parse_request_body_response(json.dumps(token_response.json()))
-    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    uri, headers, body = client.add_token(userinfo_endpoint)
-    userinfo_response = requests.get(uri, headers=headers, data=body)
-
-    if userinfo_response.json().get("email_verified"):
-        unique_id = userinfo_response.json()["sub"]
-        users_name = userinfo_response.json()["given_name"]
-    else:
-        return "User email not available or not verified by Google.", 400
-    
+    response = requests.post('https://oauth2.googleapis.com/token', data=data).json()
+    headers = {
+        'Authorization': f'Bearer {response["access_token"]}'
+    }
+    user_info = requests.get('https://www.googleapis.com/oauth2/v3/userinfo', headers=headers).json()
+    # sub is a unique id for every google account.
+    unique_id= user_info['sub']
     user= Users.query.filter_by(google_id=unique_id).first()
     if user:
         login_user(user)
     else:
-        user= Users(google_id=unique_id, username=users_name)
+        user= Users(google_id=unique_id, username=user_info['given_name'])
         db.session.add(user)
         db.session.commit()
         login_user(user)
-    return redirect(url_for("index"))
 
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for("index"))
+    jwt_token = create_access_token(identity=user_info['email'])  # Create a JWT token
+    response = jsonify(user=user_info)
+    response.set_cookie('access_token_cookie', value=jwt_token, secure=True)
+    return response, 200
 
-if __name__ == "__main__":
-    app.run(ssl_context="adhoc")
+if __name__ == '__main__':
+    app.run(debug=True, host="0.0.0.0")
