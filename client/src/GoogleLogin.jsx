@@ -34,7 +34,7 @@ export default function GoogleLogin({ onLoginSuccess }) {
       if (loginDetails) {
         setLoggedIn(true);
         setUser(loginDetails.user);
-        onLoginSuccess();
+        onLoginSuccess(loginDetails);
       }
     },
   });

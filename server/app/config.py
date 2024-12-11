@@ -23,6 +23,7 @@ def create_app():
         f"{this_app.config['DATABASE_FILE']}.sqlite3"
     )
     this_app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_file}"
+    this_app.config['JWT_COOKIE_CSRF_PROTECT'] = True
     login_manager.init_app(this_app)
     db.init_app(this_app)
     if not db_file.exists():

@@ -3,32 +3,38 @@ from flask_login import login_required, current_user
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Tasks, TasksSchema, Users, db
 from sqlalchemy.orm import joinedload
+from flask_cors import CORS
 
 tasks_bp = Blueprint('tasks', __name__, url_prefix='/api/tasks')
 
 tasks_schema = TasksSchema()
 tasks_schemas = TasksSchema(many=True)
+CORS(tasks_bp, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
 
 @tasks_bp.route('', methods=['GET'])
 @jwt_required()
 def get_tasks():
     """Retrieve all tasks for the current user"""
-    current_user_email = get_jwt_identity()
-    user = Users.query.filter_by(google_id=current_user_email).first()
-    
+    current_user_google_id = get_jwt_identity()
+    user = Users.query.filter_by(google_id=current_user_google_id).first()
+ 
     if not user:
         return jsonify({"error": "User not found"}), 404
     
-    tasks = Tasks.query.filter_by(user_id=user.id).all()
+    tasks = Tasks.query.filter(Tasks.user_id== user.id).all()
     return jsonify(tasks_schemas.dump(tasks)), 200
 
 @tasks_bp.route('', methods=['POST'])
 @jwt_required()
 def create_task():
     """Create a new task for the current user"""
-    current_user_email = get_jwt_identity()
-    user = Users.query.filter_by(google_id=current_user_email).first()
-    
+    try:
+        current_user_id = get_jwt_identity()
+        print("User id: ", current_user_id)
+    except Exception as e:
+        print("Extraction failed")
+        return jsonify({"Error: Unauthorized"}), 401
+    user = Users.query.filter_by(google_id=current_user_id).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
     
