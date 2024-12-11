@@ -12,6 +12,7 @@ from config import db, mm, create_app
 from models import Users
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity, get_csrf_token, set_access_cookies
 from flask_cors import CORS
+from tasks_routes import tasks_bp
 
 app = create_app()
 CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
