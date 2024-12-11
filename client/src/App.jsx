@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import './App.css'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import GoogleLogin from './GoogleLogin'
@@ -11,11 +11,41 @@ function App() {
   const [user, setUser]= useState(null);
   const navigate= useNavigate();
 
+  useEffect( () =>{
+    const loggedInStatus= localStorage.getItem("isLoggedIn");
+    const storedUser= localStorage.getItem("user");
+    console.log("Logged in ", loggedInStatus)
+    console.log("Stored", storedUser)
+
+    if (loggedInStatus=="true" && storedUser){
+      setIsLoggedIn(true);
+      setUser(JSON.parse(storedUser));
+    } else{
+      setIsLoggedIn(false);
+      setUser(null);
+    }
+  }, []);
+
   const handleLoginSuccess = (response) => {
     setUser(response);
+    console.log(response)
     setIsLoggedIn(true);
-    navigate('/home');
+    try {
+      localStorage.setItem("isLoggedIn", true);
+      localStorage.setItem("user", JSON.stringify(response));
+    } catch (error) {
+      console.log("Error adding to local storage"), 404
+    }
+    navigate("/home");
   };
+
+  const handleLogout= () => {
+    setIsLoggedIn(false);
+    setUser(null);
+    localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem('user');
+    navigate("/")
+  }
 
   return (
     <>
@@ -26,7 +56,7 @@ function App() {
             {!isLoggedIn? (
               <GoogleLogin onLoginSuccess={handleLoginSuccess} />
             ):(
-              <button onClick={() => setIsLoggedIn(false)}>Logout</button>
+              <button onClick={handleLogout}>Logout</button>
             )} 
           </GoogleOAuthProvider>
         </header>
