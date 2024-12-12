@@ -57,10 +57,9 @@ def login():
 
     jwt_token = create_access_token(identity=unique_id)  # Create a JWT token
     response = jsonify(user=user_info)
-    set_access_cookies(response, jwt_token)
     csrf_token= get_csrf_token(jwt_token)
-    response.set_cookie('csrf_access_token', value=csrf_token, secure=False)
-    response.set_cookie('access_token_cookie', value=jwt_token, secure=False, samesite='Strict', max_age=3600)
+    response.set_cookie('csrf_access_token', value=csrf_token, secure=False, domain='127.0.0.1')
+    response.set_cookie('access_token_cookie', value=jwt_token, secure=False, max_age=3600, domain='127.0.0.1')
     return response, 200
 
 @app.after_request

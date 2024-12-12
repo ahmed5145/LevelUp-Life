@@ -5,6 +5,7 @@ async function getUserInfo(responseCode) {
   try {
     const response = await fetch("http://127.0.0.1:5000/google/login", {
       method: "POST",
+      credentials: 'include',
       headers: {
         "Content-Type": "application/json",
       },
