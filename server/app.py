@@ -1,6 +1,6 @@
 # Create the app and run the app
 # server/app.py
-from .app import create_app
+from app import create_app
 
 app = create_app()
 

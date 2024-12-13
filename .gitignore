@@ -6,3 +6,5 @@ LevelUpDb.sqlite3
 test.py
 .venv
 .env.test
+.pytest_cache
+.mypy_cache

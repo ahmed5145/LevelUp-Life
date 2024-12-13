@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import Tasks, TasksSchema, Users, db
+from .models import Tasks, TasksSchema, Users, db
 from sqlalchemy.orm import joinedload
 
 tasks_bp = Blueprint('tasks', __name__, url_prefix='/api/tasks')
+CORS(tasks_bp, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
 
 tasks_schema = TasksSchema()
 tasks_schemas = TasksSchema(many=True)
@@ -13,9 +14,10 @@ tasks_schemas = TasksSchema(many=True)
 @jwt_required()
 def get_tasks():
     """Retrieve all tasks for the current user"""
-    current_user_email = get_jwt_identity()
-    user = Users.query.filter_by(google_id=current_user_email).first()
-    
+    current_user_google_id = get_jwt_identity()
+    print("User id: ", current_user_google_id)
+    user = Users.query.filter_by(google_id=current_user_google_id).first()
+ 
     if not user:
         return jsonify({"error": "User not found"}), 404
     
@@ -48,7 +50,7 @@ def create_task():
     db.session.add(new_task)
     db.session.commit()
     
-    return jsonify(tasks_schema.dump(new_task)), 201
+    return jsonify(tasks_schema.dump(new_task)), 200
 
 @tasks_bp.route('/<int:task_id>', methods=['PUT'])
 @jwt_required()

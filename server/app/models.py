@@ -1,21 +1,26 @@
-from app.config import db, mm
+from .config import db, mm
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class Users(UserMixin, db.Model):
     __tablename__ = "users"
-    id= db.Column(db.Integer, primary_key=True, autoincrement=True)
-    google_id= db.Column(db.String, unique=True, nullable=False)
-    username= db.Column(db.String, nullable=False) # Can be the user's name from Google. Can change if needed
-    """
-    password= db.Column(db.String, nullable=False) 
-    # Optional if decidce to use JWT/ other login. Google Login doesn't requrie storing a password
-    """
-    level= db.Column(db.Integer, default=1)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    google_id = db.Column(db.String, unique=True, nullable=True)  # Nullable for email-password users
+    username = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=True)
+    password_hash = db.Column(db.String, nullable=True)  # Hashed password
+    level = db.Column(db.Integer, default=1)
     xp = db.Column(db.Integer, default=0)
     coins = db.Column(db.Integer, default=0)
 
     def __repr__(self) -> str:
         return f"<User(name={self.username!r}), level={self.level!r}>"
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
     
 class UsersSchema(mm.SQLAlchemyAutoSchema):
     """User schema"""

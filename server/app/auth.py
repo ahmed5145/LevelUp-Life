@@ -8,11 +8,11 @@ from flask_login import (
     logout_user,
 )
 import requests
-from config import db, mm, create_app
-from models import Users
-from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
+from .config import db, mm, create_app
+from .models import Users
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity, get_csrf_token, set_access_cookies
 from flask_cors import CORS
-from tasks_routes import tasks_bp
+from .tasks_routes import tasks_bp
 
 app = create_app()
 CORS(app)
@@ -29,12 +29,49 @@ jwt= JWTManager(app)
 
 app.register_blueprint(tasks_bp)
 
-@app.route("/test")
-def main():
-    return jsonify("Test done"), 200
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    username = data.get('username')
+    google_id = email
+
+    if not email or not password or not username:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    if Users.query.filter_by(email=email).first():
+        return jsonify({"error": "Email already exists"}), 400
+
+    user = Users(email=email, username=username, google_id=google_id)
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+
+    jwt_token = create_access_token(identity=email)
+    response = jsonify({"message": "Signup successful"})
+    set_access_cookies(response, jwt_token)
+    return response, 201
+
+
+@app.route('/login', methods=['POST'])
+def email_login():  # Renamed to email_login
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    user = Users.query.filter_by(email=email).first()
+
+    if not user or not user.check_password(password):
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    jwt_token = create_access_token(identity=email)
+    response = jsonify({"message": "Login successful"})
+    set_access_cookies(response, jwt_token)
+    return response, 200
 
 @app.route('/google/login', methods=['POST'])
-def login():
+def google_login():  # Renamed to google_login
     auth_code = request.get_json()['code']
     data = {
         'code': auth_code,
@@ -49,20 +86,23 @@ def login():
         'Authorization': f'Bearer {response["access_token"]}'
     }
     user_info = requests.get('https://www.googleapis.com/oauth2/v3/userinfo', headers=headers).json()
-    # sub is a unique id for every google account.
-    unique_id= user_info['sub']
-    user= Users.query.filter_by(google_id=unique_id).first()
+    unique_id = user_info['sub']
+    user = Users.query.filter_by(google_id=unique_id).first()
     if user:
         login_user(user)
     else:
-        user= Users(google_id=unique_id, username=user_info['given_name'])
+        user = Users(google_id=unique_id, username=user_info['given_name'])
         db.session.add(user)
         db.session.commit()
         login_user(user)
 
     jwt_token = create_access_token(identity=user_info['email'])  # Create a JWT token
     response = jsonify(user=user_info)
-    response.set_cookie('access_token_cookie', value=jwt_token, secure=True)
+    csrf_token = get_csrf_token(jwt_token)
+    response.set_cookie('csrf_access_token', value=csrf_token, secure=False, domain='localhost')
+    response.set_cookie('csrf_access_token', value=csrf_token, secure=False, domain='127.0.0.1')
+    response.set_cookie('access_token_cookie', value=jwt_token, secure=False, max_age=3600, domain='localhost')
+    response.set_cookie('access_token_cookie', value=jwt_token, secure=False, max_age=3600, domain='127.0.0.1')
     return response, 200
 
 if __name__ == '__main__':
