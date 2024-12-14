@@ -6,6 +6,7 @@ import TaskManager from './components/TaskManager';
 import Signup from './Signup';
 import Login from './Login';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import GetCharacter from './components/Characters';
 
 function App() {
   const cId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -26,7 +27,11 @@ function App() {
   }, []);
 
   const handleLoginSuccess = (response) => {
-    setUser(response);
+    if (response){
+      setUser(response)
+    } else{
+      setUser(null);
+    }
     setIsLoggedIn(true);
     try {
       localStorage.setItem("isLoggedIn", true);
@@ -62,6 +67,8 @@ function App() {
             )}
           </GoogleOAuthProvider>
         </header>
+      </div>
+      <div>
         <Routes>
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
@@ -69,6 +76,7 @@ function App() {
             path="/home"
             element={isLoggedIn ? <TaskManager /> : <h2>Please login to access tasks</h2>}
           />
+          <Route path="/avatar" element={<GetCharacter />} />
         </Routes>
       </div>
     </>

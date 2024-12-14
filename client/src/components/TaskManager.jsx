@@ -12,11 +12,14 @@ const TaskManager = () => {
   const fetchTasks = async () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken= document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const response = await fetch('http://127.0.0.1:5000/api/tasks', {
         method: 'GET',
+        credentials: 'include',
         headers: { 
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          "X-CSRF-TOKEN": csrfToken,
         }
       });
 
@@ -36,11 +39,14 @@ const TaskManager = () => {
     e.preventDefault();
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken= document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const response = await fetch('http://127.0.0.1:5000/api/tasks', {
         method: 'POST',
+        credentials: 'include',
         headers: { 
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          "X-CSRF-TOKEN": csrfToken,
         },
         body: JSON.stringify(newTask)
       });
@@ -62,11 +68,14 @@ const TaskManager = () => {
   const handleUpdateTask = async (task) => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken= document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const response = await fetch(`http://127.0.0.1:5000/api/tasks/${task.id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: { 
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          "X-CSRF-TOKEN": csrfToken,
         },
         body: JSON.stringify({ ...task, status: !task.status })
       });
@@ -87,11 +96,14 @@ const TaskManager = () => {
   const handleDeleteTask = async (taskId) => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken= document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const response = await fetch(`http://127.0.0.1:5000/api/tasks/${taskId}`, {
         method: 'DELETE',
+        credentials: 'include',
         headers: { 
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          "X-CSRF-TOKEN": csrfToken,
         }
       });
 

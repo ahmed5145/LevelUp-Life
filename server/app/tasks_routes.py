@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from .models import Tasks, TasksSchema, Users, db
 from sqlalchemy.orm import joinedload
+from flask_cors import CORS
 
 tasks_bp = Blueprint('tasks', __name__, url_prefix='/api/tasks')
 CORS(tasks_bp, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])

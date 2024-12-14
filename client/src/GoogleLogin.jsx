@@ -5,6 +5,7 @@ async function getUserInfo(responseCode) {
   try {
     const response = await fetch("http://127.0.0.1:5000/google/login", {
       method: "POST",
+      credentials: 'include',
       headers: {
         "Content-Type": "application/json",
       },
@@ -24,39 +25,21 @@ async function getUserInfo(responseCode) {
 }
 
 export default function GoogleLogin({ onLoginSuccess }) {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState({});
-
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (responseCode) => {
       const loginDetails = await getUserInfo(responseCode);
       if (loginDetails) {
-        setLoggedIn(true);
-        setUser(loginDetails.user);
-        onLoginSuccess();
+        onLoginSuccess(loginDetails.user);
+      } else{
+        console.error("Failed to retrieve user")
       }
     },
   });
 
-  const handleLogout = () => {
-    setLoggedIn(false);
-    setUser({});
-    // Optional: We can clear the access token cookie here
-  };
-
-
   return (
     <>
-      {!loggedIn ? (
-        <button onClick={googleLogin}>Google Login</button>
-      ) : (
-        <div>
-          <p>Hello, {user.given_name || "User"}!</p>
-          <button onClick={handleLogout}>Log out</button>
-        </div>
-      )}
-
+    <button onClick={googleLogin}>Google Login</button>
     </>
   );
 }

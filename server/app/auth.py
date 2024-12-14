@@ -13,6 +13,7 @@ from .models import Users
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity, get_csrf_token, set_access_cookies
 from flask_cors import CORS
 from .tasks_routes import tasks_bp
+from .routes import routes_bp
 
 app = create_app()
 CORS(app)
@@ -28,6 +29,7 @@ app.config['JWT_TOKEN_LOCATION']= ['cookies']
 jwt= JWTManager(app)
 
 app.register_blueprint(tasks_bp)
+app.register_blueprint(routes_bp)
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -96,7 +98,7 @@ def google_login():  # Renamed to google_login
         db.session.commit()
         login_user(user)
 
-    jwt_token = create_access_token(identity=user_info['email'])  # Create a JWT token
+    jwt_token = create_access_token(identity=user_info['sub'])  # Create a JWT token
     response = jsonify(user=user_info)
     csrf_token = get_csrf_token(jwt_token)
     response.set_cookie('csrf_access_token', value=csrf_token, secure=False, domain='localhost')
