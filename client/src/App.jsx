@@ -5,8 +5,10 @@ import GoogleLogin from './GoogleLogin';
 import TaskManager from './components/TaskManager';
 import Signup from './Signup';
 import Login from './Login';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate, createBrowserRouter } from 'react-router-dom';
 import GetCharacter from './components/Characters';
+import NavBar from './components/NavBar';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const cId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -50,31 +52,48 @@ function App() {
     navigate("/");
   };
 
+
   return (
     <>
-      <h1>LevelUpLife</h1>
-      <div className="App">
-        <header className="Appheader">
-          <GoogleOAuthProvider clientId={cId}>
-            {!isLoggedIn ? (
-              <>
-                <GoogleLogin onLoginSuccess={handleLoginSuccess} />
-                <button onClick={() => navigate("/signup")}>Signup</button>
-                <button onClick={() => navigate("/login")}>Login</button>
-              </>
-            ) : (
-              <button onClick={handleLogout}>Logout</button>
-            )}
-          </GoogleOAuthProvider>
-        </header>
-      </div>
+      <NavBar
+        isLoggedIn={isLoggedIn}
+        handleLogout={handleLogout}
+        navigate={navigate}
+      />
       <div>
         <Routes>
+          <Route
+            path="/"
+            element={
+              <header className="Appheader">
+                <GoogleOAuthProvider clientId={cId}>
+                  {!isLoggedIn ? (
+                    <>
+                      <GoogleLogin onLoginSuccess={handleLoginSuccess} />
+                      <button onClick={() => navigate("/signup")}>Signup</button>
+                      <button onClick={() => navigate("/login")}>Login</button>
+                    </>
+                  ) : (
+                    <button onClick={handleLogout}>Logout</button>
+                  )}
+                </GoogleOAuthProvider>
+              </header>
+            }
+          />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+          <Route
+            path="/login"
+            element={<Login onLoginSuccess={handleLoginSuccess} />}
+          />
           <Route
             path="/home"
-            element={isLoggedIn ? <TaskManager /> : <h2>Please login to access tasks</h2>}
+            element={
+              isLoggedIn ? (
+                <TaskManager />
+              ) : (
+                <h2>Please login to access tasks</h2>
+              )
+            }
           />
           <Route path="/avatar" element={<GetCharacter />} />
         </Routes>
@@ -83,10 +102,4 @@ function App() {
   );
 }
 
-export default function AppWrapper() {
-  return (
-    <Router>
-      <App />
-    </Router>
-  );
-}
+export default App;

@@ -32,8 +32,7 @@ export default function GetCharacter() {
       setSelectedAvatar(data.avatar);
       // Make a list with all the possible images from the assets folder
       const avatarNumbers = Array.from({ length: 14 }, (_, i) => `${i + 1}p.png`);
-      const otherAvatars = avatarNumbers.filter((avatar) => avatar !== data.avatar);
-      setAvatars(otherAvatars);
+      setAvatars(avatarNumbers);
     } catch (error) {
       console.error("Error fetching avatar:", error);
     }
@@ -60,8 +59,6 @@ export default function GetCharacter() {
       // When user selects an avatar, set it. 
       setSelectedAvatar(newAvatar);
       // Update other avatars list and include the previously selected back to the options
-      const updatedAvatars = avatars.filter((avatar) => avatar !== newAvatar);
-      setAvatars([...updatedAvatars, selectedAvatar]);
     } catch (error) {
       console.error("Error updating avatar:", error);
     }
@@ -72,8 +69,8 @@ export default function GetCharacter() {
       <h1>Profile</h1>
 
       {/* Currenty selected avatar */}
-      <Card style={{ width: "18rem", margin: "0 auto", textAlign: "center" }}>
-        <Card.Img variant="top" src={`${path}${selectedAvatar}`} height="200px" width="200px" />
+      <Card style={{ width: "17rem", margin: "0 auto", textAlign: "center" }}>
+        <Card.Img variant="top" src={`${path}${selectedAvatar}`} />
         <Card.Body>
           <Button variant="primary">Selected Avatar</Button>
         </Card.Body>
@@ -86,16 +83,16 @@ export default function GetCharacter() {
         display: "grid", 
         gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", justifyContent: "center", }}>
         {avatars.map((avatar, index) => (
-          <Card key={index} style={{ width: "150px", textAlign: "center" }}>
+          <Card key={index} style={{ width: "200px", textAlign: "center",
+              border: avatar === selectedAvatar ? "2px solid #007bff" : "1px solid #ddd", }}>
             <Card.Img
               variant="top"
               src={`${path}${avatar}`}
-              height="100px"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleAvatarSelect(avatar)}
-            />
+              height="150px"/>
             <Card.Body>
-              <Button variant="secondary" onClick={() => handleAvatarSelect(avatar)}>Select</Button>
+              <Button variant="secondary"
+              disabled={avatar=== selectedAvatar}
+              onClick={() => handleAvatarSelect(avatar)}>Select</Button>
             </Card.Body>
           </Card>
         ))}
