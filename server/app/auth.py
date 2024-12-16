@@ -29,6 +29,11 @@ GOOGLE_DISCOVERY_URL = (
 
 app.config['JWT_SECRET_KEY']= os.getenv("JWT_SECRET_KEY")
 app.config['JWT_TOKEN_LOCATION']= ['cookies']
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True  # Enable CSRF protection
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/'      # Make JWT cookies accessible globally
+app.config['JWT_COOKIE_SAMESITE'] = 'Lax'       # Allow same-site requests
+app.config['JWT_COOKIE_SECURE'] = False         # Use `True` if using HTTPS
+
 jwt= JWTManager(app)
 
 app.register_blueprint(tasks_bp)
@@ -61,7 +66,7 @@ def signup():
 
 
 @app.route('/login', methods=['POST'])
-def email_login():  # Renamed to email_login
+def email_login():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -74,10 +79,13 @@ def email_login():  # Renamed to email_login
     jwt_token = create_access_token(identity=email)
     response = jsonify({"message": "Login successful"})
     set_access_cookies(response, jwt_token)
+
+    response.set_cookie('access_token_cookie', value=jwt_token, httponly=True, samesite='Lax')
+
     return response, 200
 
 @app.route('/google/login', methods=['POST'])
-def google_login():  # Renamed to google_login
+def google_login():
     auth_code = request.get_json()['code']
     data = {
         'code': auth_code,
@@ -94,21 +102,18 @@ def google_login():  # Renamed to google_login
     user_info = requests.get('https://www.googleapis.com/oauth2/v3/userinfo', headers=headers).json()
     unique_id = user_info['sub']
     user = Users.query.filter_by(google_id=unique_id).first()
-    if user:
-        login_user(user)
-    else:
+    if not user:
         user = Users(google_id=unique_id, username=user_info['given_name'])
         db.session.add(user)
         db.session.commit()
-        login_user(user)
 
-    jwt_token = create_access_token(identity=user_info['sub'])  # Create a JWT token
-    response = jsonify(user=user_info)
-    csrf_token = get_csrf_token(jwt_token)
-    response.set_cookie('csrf_access_token', value=csrf_token, secure=False, domain='localhost')
-    response.set_cookie('csrf_access_token', value=csrf_token, secure=False, domain='127.0.0.1')
-    response.set_cookie('access_token_cookie', value=jwt_token, secure=False, max_age=3600, domain='localhost')
-    response.set_cookie('access_token_cookie', value=jwt_token, secure=False, max_age=3600, domain='127.0.0.1')
+    jwt_token = create_access_token(identity=user.google_id)
+    response = jsonify({"message": "Google login successful"})
+    set_access_cookies(response, jwt_token)
+
+    # Set cookies to be secure (add `secure=True` if using HTTPS)
+    response.set_cookie('access_token_cookie', value=jwt_token, httponly=True, samesite='Lax')
+
     return response, 200
 
 if __name__ == '__main__':
