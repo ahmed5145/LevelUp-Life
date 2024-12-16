@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/api/rpg";
+const BASE_URL = "http://127.0.0.1:5000/api/rpg";
 
 export const getRpgStatus = async () => {
     const response = await axios.get(`${BASE_URL}/status`, { withCredentials: true });
