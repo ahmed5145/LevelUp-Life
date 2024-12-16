@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { updateHabit } from "../api/rpgApi";
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
+  const [habits, setHabits] = useState([]);
+  const [highlightedHabit, setHighlightedHabit] = useState({});
   const [newTask, setNewTask] = useState({ title: '', description: '', difficulty: 1 });
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchTasks();
+    fetchHabits();
   }, []);
 
   const fetchTasks = async () => {
@@ -33,6 +35,32 @@ const TaskManager = () => {
     } catch (error) {
       console.error('Error fetching tasks:', error);
       setError('Failed to fetch tasks. Please try again.');
+    }
+  };
+
+  const fetchHabits = async () => {
+    try {
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const response = await fetch('http://127.0.0.1:5000/api/habits', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          "X-CSRF-TOKEN": csrfToken,
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch habits');
+      }
+
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      console.error('Error fetching habits:', error);
+      setError('Failed to fetch habits. Please try again.');
     }
   };
 
@@ -65,15 +93,94 @@ const TaskManager = () => {
       setError('Failed to create task. Please try again.');
     }
   };
+  const handleCreateHabit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const response = await fetch('http://127.0.0.1:5000/api/habits', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          "X-CSRF-TOKEN": csrfToken,
+        },
+        body: JSON.stringify(newTask)
+      });
 
+      if (!response.ok) {
+        throw new Error('Failed to create habit');
+      }
+
+      const data = await response.json();
+      setTasks([...tasks, data]);
+      setNewTask({ title: '', description: '', difficulty: 1 });
+      setError(null);
+    } catch (error) {
+      console.error('Error creating habit:', error);
+      setError('Failed to create habit. Please try again.');
+    }
+  };
+
+  
   const handleHabitCompletion = async (taskId, isGood) => {
     try {
-      const result = await updateHabit(taskId, isGood);
-      alert(`Habit updated! XP: ${result.xp}, Coins: ${result.coins}, HP: ${result.hp}`);
+      const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  
+      const response = await fetch(`http://127.0.0.1:5000/api/rpg/update_habit`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "X-CSRF-TOKEN": csrfToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ habit_id: taskId, is_good: isGood }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update habit");
+      }
+  
+      const result = await response.json();
+      alert(`Habit updated! XP: ${result.xp}, Coins: ${result.coins}, HP: ${result.hp}, Streak: ${result.streak}`);
+  
+      // Highlight the habit
+      setHighlightedHabit({ ...highlightedHabit, [taskId]: isGood ? "good" : "bad" });
+  
       fetchTasks(); // Refresh tasks after update
     } catch (error) {
-      console.error('Error updating habit:', error);
-      setError('Failed to update habit. Please try again.');
+      console.error("Error updating habit:", error);
+      setError("Failed to update habit. Please try again.");
+    }
+  };
+  
+  const handleCompleteTask = async (taskId) => {
+    try {
+      const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+      const response = await fetch(`http://127.0.0.1:5000/api/tasks/${taskId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "X-CSRF-TOKEN": csrfToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: true }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to complete task");
+      }
+
+      fetchTasks(); // Refresh tasks after completion
+    } catch (error) {
+      console.error("Error completing task:", error);
+      setError("Failed to complete task. Please try again.");
     }
   };
 
@@ -161,15 +268,23 @@ const TaskManager = () => {
             <div className="task-actions flex space-x-2">
               <button 
                 onClick={() => handleHabitCompletion(task.id, true)}
-                className="flex-1 p-2 bg-green-500 text-white rounded"
+                className={`flex-1 p-2 rounded ${highlightedHabit[task.id] === "good" ? "bg-green-500 text-white" : "bg-gray-200"}`}
+                disabled={highlightedHabit[task.id] === "bad"}
               >
                 Good Habit
               </button>
               <button 
                 onClick={() => handleHabitCompletion(task.id, false)}
-                className="flex-1 p-2 bg-yellow-500 text-white rounded"
+                className={`flex-1 p-2 rounded ${highlightedHabit[task.id] === "bad" ? "bg-yellow-500 text-white" : "bg-gray-200"}`}
+                disabled={highlightedHabit[task.id] === "good"}
               >
                 Bad Habit
+              </button>
+              <button 
+                onClick={() => handleCompleteTask(task.id)}
+                className="flex-1 p-2 bg-blue-500 text-white rounded"
+              >
+                Complete
               </button>
               <button 
                 onClick={() => handleDeleteTask(task.id)}
