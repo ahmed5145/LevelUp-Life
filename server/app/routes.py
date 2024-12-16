@@ -35,7 +35,13 @@ def select_avatar():
     db.session.commit()
     return jsonify({"avatar": new_avatar}), 200
 
+@routes_bp.route('/navbarAvatar', methods=['GET'])
+@jwt_required()
+def get_frame():
+    """Retrieve the current avatar"""
+    current_user_google_id = get_jwt_identity()
+    navbarAvatar= db.session.query(Users.frame, Users.avatar).filter_by(google_id=current_user_google_id).first()
 
-@routes_bp.route('/test')
-def test():
-    return jsonify({"Test": "Mero lado kuchiyo"}), 200
+    if navbarAvatar is None: # User is doesn't have a frame
+        return jsonify({"error": "User not in database"}), 400
+    return jsonify({"frame": navbarAvatar.frame, "avatar": navbarAvatar.avatar}), 200
