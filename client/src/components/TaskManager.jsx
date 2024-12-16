@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { updateHabit } from "../api/rpgApi";
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
@@ -12,11 +13,11 @@ const TaskManager = () => {
   const fetchTasks = async () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const csrfToken= document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const response = await fetch('http://127.0.0.1:5000/api/tasks', {
         method: 'GET',
         credentials: 'include',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           "X-CSRF-TOKEN": csrfToken,
@@ -39,11 +40,11 @@ const TaskManager = () => {
     e.preventDefault();
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const csrfToken= document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const response = await fetch('http://127.0.0.1:5000/api/tasks', {
         method: 'POST',
         credentials: 'include',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           "X-CSRF-TOKEN": csrfToken,
@@ -65,42 +66,25 @@ const TaskManager = () => {
     }
   };
 
-  const handleUpdateTask = async (task) => {
+  const handleHabitCompletion = async (taskId, isGood) => {
     try {
-      const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const csrfToken= document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch(`http://127.0.0.1:5000/api/tasks/${task.id}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          "X-CSRF-TOKEN": csrfToken,
-        },
-        body: JSON.stringify({ ...task, status: !task.status })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update task');
-      }
-
-      const data = await response.json();
-      setTasks(tasks.map(t => t.id === task.id ? data : t));
-      setError(null);
+      const result = await updateHabit(taskId, isGood);
+      alert(`Habit updated! XP: ${result.xp}, Coins: ${result.coins}, HP: ${result.hp}`);
+      fetchTasks(); // Refresh tasks after update
     } catch (error) {
-      console.error('Error updating task:', error);
-      setError('Failed to update task. Please try again.');
+      console.error('Error updating habit:', error);
+      setError('Failed to update habit. Please try again.');
     }
   };
 
   const handleDeleteTask = async (taskId) => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const csrfToken= document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const response = await fetch(`http://127.0.0.1:5000/api/tasks/${taskId}`, {
         method: 'DELETE',
         credentials: 'include',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           "X-CSRF-TOKEN": csrfToken,
@@ -122,7 +106,7 @@ const TaskManager = () => {
   return (
     <div className="task-manager p-4 bg-gray-100">
       <h2 className="text-2xl font-bold mb-4">My Tasks</h2>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           {error}
@@ -176,10 +160,16 @@ const TaskManager = () => {
             <p className="text-sm mb-2">Difficulty: {task.difficulty}</p>
             <div className="task-actions flex space-x-2">
               <button 
-                onClick={() => handleUpdateTask(task)}
-                className={`flex-1 p-2 rounded ${task.status ? 'bg-green-500' : 'bg-yellow-500'} text-white`}
+                onClick={() => handleHabitCompletion(task.id, true)}
+                className="flex-1 p-2 bg-green-500 text-white rounded"
               >
-                {task.status ? 'Completed' : 'Mark Complete'}
+                Good Habit
+              </button>
+              <button 
+                onClick={() => handleHabitCompletion(task.id, false)}
+                className="flex-1 p-2 bg-yellow-500 text-white rounded"
+              >
+                Bad Habit
               </button>
               <button 
                 onClick={() => handleDeleteTask(task.id)}

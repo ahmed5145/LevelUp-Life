@@ -13,6 +13,7 @@ class Users(UserMixin, db.Model):
     xp = db.Column(db.Integer, default=0)
     coins = db.Column(db.Integer, default=0)
     avatar= db.Column(db.String, default="14p.png")
+    hp = db.Column(db.Integer, default=100)
 
     def __repr__(self) -> str:
         return f"<User(name={self.username!r}), level={self.level!r}>"

@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate, createBrowserRoute
 import GetCharacter from './components/Characters';
 import NavBar from './components/NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Status from "./components/status";
 
 function App() {
   const cId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -52,7 +53,6 @@ function App() {
     navigate("/");
   };
 
-
   return (
     <>
       <NavBar
@@ -89,7 +89,10 @@ function App() {
             path="/home"
             element={
               isLoggedIn ? (
-                <TaskManager />
+                <>
+                  <TaskManager />
+                  <Status />
+                </>
               ) : (
                 <h2>Please login to access tasks</h2>
               )

@@ -14,8 +14,11 @@ from flask_jwt_extended import create_access_token, JWTManager, jwt_required, ge
 from flask_cors import CORS
 from .tasks_routes import tasks_bp
 from .routes import routes_bp
+from .rpg_routes import rpg_bp
 
 app = create_app()
+with app.app_context():
+    db.create_all()
 CORS(app)
 CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
@@ -30,6 +33,7 @@ jwt= JWTManager(app)
 
 app.register_blueprint(tasks_bp)
 app.register_blueprint(routes_bp)
+app.register_blueprint(rpg_bp)
 
 @app.route('/signup', methods=['POST'])
 def signup():
