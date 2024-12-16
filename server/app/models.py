@@ -12,7 +12,8 @@ class Users(UserMixin, db.Model):
     level = db.Column(db.Integer, default=1)
     xp = db.Column(db.Integer, default=0)
     coins = db.Column(db.Integer, default=0)
-    avatar= db.Column(db.String, default="14p.png")
+    avatar= db.Column(db.String, default="14p.png",nullable=False)
+    frame= db.Column(db.String, default= "1-Frame.png", nullable=False)
     hp = db.Column(db.Integer, default=100)
 
     def __repr__(self) -> str:

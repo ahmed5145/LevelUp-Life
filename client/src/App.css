@@ -5,3 +5,28 @@
   width: 100%;
   height: 100%;
 }
+
+.avatar-frame {
+  position: relative;
+  width: 60px; /* Adjust to match your frame dimensions */
+  height: 60px; /* Adjust to match your frame dimensions */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.frame-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Frame should be above the avatar */
+  object-fit: cover; /* Ensure the frame fits properly */
+}
+
+.avatar-image {
+  position: absolute;
+  width: 80%; /* Slightly smaller than the frame to fit inside */
+  height: 80%;
+  z-index: 1; /* Avatar should be below the frame */
+  object-fit: contain; /* Maintain the aspect ratio of the avatar */
+}
