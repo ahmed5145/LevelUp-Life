@@ -55,8 +55,8 @@ class Habits(db.Model):
     __tablename__= "habits"
     id= db.Column(db.Integer, primary_key=True)
     user_id= db.Column(db.Integer, db.ForeignKey("users.id"))
-    description= db.Column(db.String)
-    good_or_bad= db.Column(db.Boolean, default=True)
+    title= db.Column(db.String, nullable=False)
+    nature= db.Column(db.String, default='Good')
     streak= db.Column(db.Integer, default=0)
 
     def __repr__(self) -> str:

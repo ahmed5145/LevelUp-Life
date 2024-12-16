@@ -57,7 +57,7 @@ const TaskManager = () => {
       }
 
       const data = await response.json();
-      setTasks([...tasks, data]);
+      setTasks([data, ...tasks]);
       setNewTask({ title: '', description: '', difficulty: 1 });
       setError(null);
     } catch (error) {

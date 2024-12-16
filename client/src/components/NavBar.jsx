@@ -36,7 +36,6 @@
         const data = await response.json();
         setAvatar(data.avatar);
         setFrame(data.frame)
-        console.log(avatar, frame)
       } catch (error) {
         console.error("Error fetching avatar:", error);
       }

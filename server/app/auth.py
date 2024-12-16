@@ -15,6 +15,8 @@ from flask_cors import CORS
 from .tasks_routes import tasks_bp
 from .routes import routes_bp
 from .rpg_routes import rpg_bp
+from .habits_routes import habits_bp
+from datetime import datetime
 
 app = create_app()
 with app.app_context():
@@ -34,6 +36,7 @@ jwt= JWTManager(app)
 app.register_blueprint(tasks_bp)
 app.register_blueprint(routes_bp)
 app.register_blueprint(rpg_bp)
+app.register_blueprint(habits_bp)
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -110,6 +113,19 @@ def google_login():  # Renamed to google_login
     response.set_cookie('access_token_cookie', value=jwt_token, secure=False, max_age=3600, domain='localhost')
     response.set_cookie('access_token_cookie', value=jwt_token, secure=False, max_age=3600, domain='127.0.0.1')
     return response, 200
+
+@jwt.expired_token_loader
+def handle_expired_token(jwt_header, jwt_payload):
+    # Remove cookie
+    response= jsonify({"msg": "The token has expired. Please log in again"})
+    response.status_code = 401
+    response.set_cookie("access_token_cookie", "", expires=0)
+    return response
+
+@app.route('/api/validate', methods=['GET'])
+@jwt_required()
+def validate_token():
+    return jsonify({"msg": "token is valid"})
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
