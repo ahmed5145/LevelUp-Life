@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload
 from flask_cors import CORS
 
 tasks_bp = Blueprint('tasks', __name__, url_prefix='/api/tasks')
-CORS(tasks_bp, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+CORS(tasks_bp, supports_credentials=True, origins=["https://6761cc25c0911c1c2f502888--admirable-pavlova-3a053c.netlify.app/"])
 
 tasks_schema = TasksSchema()
 tasks_schemas = TasksSchema(many=True)

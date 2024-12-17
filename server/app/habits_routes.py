@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload
 from flask_cors import CORS
 
 habits_bp = Blueprint('habits', __name__, url_prefix='/api/habits')
-CORS(habits_bp, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+CORS(habits_bp, supports_credentials=True, origins=["https://6761cc25c0911c1c2f502888--admirable-pavlova-3a053c.netlify.app/"])
 
 habits_schema = HabitsSchema()
 habits_schemas = HabitsSchema(many=True)

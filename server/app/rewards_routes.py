@@ -4,7 +4,7 @@ from models import Rewards, RewardsSchema, Users, db
 from flask_cors import CORS
 
 rewards_bp = Blueprint('rewards', __name__, url_prefix='/api/rewards')
-CORS(rewards_bp, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+CORS(rewards_bp, supports_credentials=True, origins=["https://6761cc25c0911c1c2f502888--admirable-pavlova-3a053c.netlify.app/"])
 
 rewards_schema = RewardsSchema()
 rewards_schemas = RewardsSchema(many=True)

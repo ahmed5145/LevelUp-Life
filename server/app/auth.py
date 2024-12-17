@@ -25,7 +25,7 @@ app = create_app()
 with app.app_context():
     db.create_all()
 CORS(app)
-CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+CORS(app, supports_credentials=True, origins=["https://6761cc25c0911c1c2f502888--admirable-pavlova-3a053c.netlify.app/"])
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_DISCOVERY_URL = (

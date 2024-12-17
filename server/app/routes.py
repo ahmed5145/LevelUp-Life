@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload, load_only
 from flask_cors import CORS
 
 routes_bp = Blueprint('routes_bp', __name__, url_prefix='/api')
-CORS(routes_bp, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+CORS(routes_bp, supports_credentials=True, origins=["https://6761cc25c0911c1c2f502888--admirable-pavlova-3a053c.netlify.app/"])
 
 @routes_bp.route('/avatar', methods=['GET'])
 @jwt_required()
