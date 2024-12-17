@@ -62,7 +62,7 @@ const HabitManager = () => {
       const data = await response.json();
 
       // Assuming the response is a single habit object, add it to the top of the list
-      setHabits([...habits,data ]);
+      setHabits([data, ...habits ]);
       setNewHabit({ title: '', good_or_bad: 'good' });
       setError(null);
     } catch (error) {

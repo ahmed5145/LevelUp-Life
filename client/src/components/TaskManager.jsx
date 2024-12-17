@@ -66,26 +66,30 @@ const TaskManager = () => {
   };
   
   
-  const handleCompleteTask = async (taskId) => {
+  const handleCompleteTask = async (taskId, difficulty) => {
     try {
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
       const response = await fetch(`http://127.0.0.1:5000/api/rpg/update_task`, {
-        method: "PUT",
+        method: "POST",
         credentials: "include",
         headers: {
           "Authorization": `Bearer ${token}`,
           "X-CSRF-TOKEN": csrfToken,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: true }),
+        body: JSON.stringify({ task_id: taskId, difficulty: difficulty }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to complete task");
       }
-
+      const result= await response.json();
+      alert(
+        `Task completed! XP: ${result.xp}, HP: ${result.hp}`
+      );
+      
       fetchTasks(); // Refresh tasks after completion
     } catch (error) {
       console.error("Error completing task:", error);
@@ -176,7 +180,7 @@ const TaskManager = () => {
             <p className="text-sm mb-2">Difficulty: {task.difficulty}</p>
             <div className="task-actions flex space-x-2">
               <button 
-                onClick={() => handleCompleteTask(task.id)}
+                onClick={() => handleCompleteTask(task.id, task.difficulty)}
                 className="flex-1 p-2 bg-blue-500 text-white rounded"
               >
                 Complete

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from .models import Users, Habits, db, Tasks
+import math
 
 rpg_bp = Blueprint('rpg', __name__, url_prefix='/api/rpg')
 
@@ -8,9 +9,12 @@ rpg_bp = Blueprint('rpg', __name__, url_prefix='/api/rpg')
 XP_PER_LEVEL = 100
 MAX_HP = 100
 
-# Helper function to calculate level based on XP
-def calculate_level(xp):
-    return xp // XP_PER_LEVEL + 1
+def set_level_xp(current_xp):
+    global XP_PER_LEVEL
+    if current_xp >= XP_PER_LEVEL:
+        XP_PER_LEVEL = math.floor(XP_PER_LEVEL * 1.25)
+    return XP_PER_LEVEL
+
 
 @rpg_bp.route('/status', methods=['GET'])
 @jwt_required()  # Ensures JWT authentication
@@ -55,15 +59,19 @@ def update_task():
     # Determine rewards and penalties based on difficulty
     difficulty_multiplier = task.difficulty or 1  # Assume default 1 if difficulty is None
     xp_reward = 1 * difficulty_multiplier
-    hp_reward = 3.5 * difficulty_multiplier
+    hp_reward = 2 * difficulty_multiplier
 
     user.xp += xp_reward
-    user.hp += hp_reward # Increment streak for good habit
+    if user.hp + hp_reward >= MAX_HP:
+        user.hp = MAX_HP
+    else:
+        user.hp += hp_reward # Increment streak for good habit
 
     # Check if user levels up
-    new_level = calculate_level(user.xp)
-    if new_level > user.level:
-        user.level = new_level
+    if user.xp >= XP_PER_LEVEL:
+        user.level = user.level + 1
+        set_level_xp(user.xp)
+        user.xp= 0
         if user.level % 10 == 0:
             get_frame= user.frame
             get_frame= get_frame.split('-')
@@ -71,13 +79,13 @@ def update_task():
             new_frame= str(frame_tier) + '-'+ get_frame[1]
             user.frame= new_frame
         user.coins += 50  # Level-up reward
-
+    
+    db.session.delete(task)
     db.session.commit()
     return jsonify({
         "message": "Task Completed",
         "xp": user.xp,
         "level": user.level,
-        "coins": user.coins,
         "hp": user.hp,
     }), 200
 
@@ -94,25 +102,24 @@ def update_habit():
     data = request.get_json()
     print(data)
     habit_id = data.get('habit_id')
-    is_good = data.get('good_or_bad')  # Expect this to be a boolean
+    is_good = data.get('good_or_bad')
 
     # Fetch habit by habit_id and ensure it belongs to the current user
     habit = Habits.query.filter_by(id=habit_id, user_id=user.id).first()
 
     if not habit:
         return jsonify({"error": "Habit not found"}), 404
-
-    # Determine rewards and penalties based on difficulty
-    difficulty_multiplier = 1  # Assume default 1 if difficulty is None
+    
+    difficulty_multiplier = 1  # Habits have no difficulty multiplier
     xp_reward = 10 * difficulty_multiplier
     coin_reward = 5 * difficulty_multiplier
     hp_penalty = 10 * difficulty_multiplier
+    coin_penalty = 10 * difficulty_multiplier
 
     if is_good =="good":
         # Apply good habit rewards
         user.xp += xp_reward
-        user.coins += coin_reward
-        habit.streak += 1  # Increment streak for good habit
+        user.coins += coin_reward # Increment streak for good habit
     else:
         # Apply bad habit penalties
         if user.hp > hp_penalty:
@@ -121,14 +128,15 @@ def update_habit():
             # User "dies": reset HP and deduct coins as a penalty
             user.hp = MAX_HP
             user.level= max(user.level-1, 1)
-            penalty = 20 * difficulty_multiplier
-            user.coins = max(user.coins - penalty, 0)
-            habit.streak += 1
+            user.coin = max(user.coins - coin_penalty, 0)
+        user.coins = max(user.coins - coin_penalty, 0)
+    habit.streak += 1
 
     # Check if user levels up
-    new_level = calculate_level(user.xp)
-    if new_level > user.level:
-        user.level = new_level
+    if user.xp >= XP_PER_LEVEL:
+        user.level += 1
+        set_level_xp(user.xp)
+        user.xp= 0
         if user.level % 10 == 0:
             get_frame= user.frame
             get_frame= get_frame.split('-')
