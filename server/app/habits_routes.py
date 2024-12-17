@@ -40,7 +40,7 @@ def create_habit():
     new_habits = Habits(
         user_id=user.id,
         title=data['title'],
-        nature=data.get('nature', 'Good'),
+        good_or_bad= data['good_or_bad'],
         streak= 0
     )
     db.session.add(new_habits)

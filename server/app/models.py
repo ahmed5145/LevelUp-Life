@@ -56,7 +56,7 @@ class Habits(db.Model):
     id= db.Column(db.Integer, primary_key=True)
     user_id= db.Column(db.Integer, db.ForeignKey("users.id"))
     title= db.Column(db.String, nullable=False)
-    nature= db.Column(db.String, default='Good')
+    good_or_bad= db.Column(db.String, default='good', nullable=False)
     streak= db.Column(db.Integer, default=0)
 
     def __repr__(self) -> str:
@@ -68,22 +68,19 @@ class HabitsSchema(mm.SQLAlchemyAutoSchema):
         model = Habits
         include_fk= True
 
-# A Daily is a task that you set to be done daily/ reoccuring task
-class Dailies(db.Model):
+class Rewards(db.Model):
     id= db.Column(db.Integer, primary_key=True)
     user_id= db.Column(db.Integer, db.ForeignKey("users.id"))
     title= db.Column(db.String, nullable=False)
-    description= db.Column(db.String)
-    difficulty= db.Column(db.Integer, default=1)
-    streak= db.Column(db.Integer, default=0)
+    price= db.Column(db.Integer, nullable= False)
 
     def __repr__(self) -> str:
-        return f"<Daily(task={self.title!r})>"
+        return f"<Rewards(reward={self.title!r})>"
 
-class DailiesSchema(mm.SQLAlchemyAutoSchema):
-    """Dailies schema"""
+class RewardsSchema(mm.SQLAlchemyAutoSchema):
+    """Rewards schema"""
     class Meta:
-        model = Dailies
+        model = Rewards
         include_fk= True
 
 
