@@ -10,11 +10,8 @@ db= SQLAlchemy()
 mm= Marshmallow()
 login_manager= LoginManager()
 login_manager.login_view= "auth.login"
-# Commented out Blueprints. Don't know if we'll need them or not
-def create_app():
-    # from auth import auth
-    # from routes import main
 
+def create_app():
     this_app = Flask(__name__)
     this_dir = pathlib.Path(__file__).parent.parent
     dotenv.load_dotenv(this_dir / pathlib.Path(".flaskenv"))
@@ -30,6 +27,4 @@ def create_app():
             db.create_all()
     with this_app.app_context():
         mm.init_app(this_app)
-    # this_app.register_blueprint(main)
-    # this_app.register_blueprint(auth)
     return this_app

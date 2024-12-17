@@ -35,8 +35,7 @@ GOOGLE_DISCOVERY_URL = (
 app.config['JWT_SECRET_KEY']= os.getenv("JWT_SECRET_KEY")
 app.config['JWT_TOKEN_LOCATION']= ['cookies']
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True  # Enable CSRF protection
-app.config['JWT_ACCESS_COOKIE_PATH'] = '/'      # Make JWT cookies accessible globally
-app.config['JWT_COOKIE_SAMESITE'] = 'Lax'       # Allow same-site requests
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/'      # Make JWT cookies accessible globally 
 app.config['JWT_COOKIE_SECURE'] = False         # Use `True` if using HTTPS
 
 jwt= JWTManager(app)
@@ -87,7 +86,7 @@ def email_login():
     response = jsonify({"message": "Login successful"})
     set_access_cookies(response, jwt_token)
 
-    response.set_cookie('access_token_cookie', value=jwt_token, httponly=True, samesite='Lax')
+    response.set_cookie('access_token_cookie', value=jwt_token)
 
     return response, 200
 
@@ -119,7 +118,7 @@ def google_login():
     set_access_cookies(response, jwt_token)
 
     # Set cookies to be secure (add `secure=True` if using HTTPS)
-    response.set_cookie('access_token_cookie', value=jwt_token, httponly=True, samesite='Lax')
+    response.set_cookie('access_token_cookie', value=jwt_token)
 
     return response, 200
 
