@@ -4,7 +4,7 @@ import { useStatus } from "./components/StatusContext";
 
 async function getUserInfo(responseCode, fetchStatus) {
   try {
-    const response = await fetch("http://127.0.0.1:5000/google/login", {
+    const response = await fetch("https://levelup-life-3.onrender.com/google/login", {
       method: "POST",
       credentials: "include",
       headers: {

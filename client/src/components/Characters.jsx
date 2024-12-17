@@ -17,7 +17,7 @@ export default function GetCharacter() {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/avatar", {
+      const response = await fetch("https://levelup-life-3.onrender.com/api/avatar", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -51,7 +51,7 @@ export default function GetCharacter() {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/avatar/select", {
+      const response = await fetch("https://levelup-life-3.onrender.com/api/avatar/select", {
         method: "POST",
         credentials: "include",
         headers: {

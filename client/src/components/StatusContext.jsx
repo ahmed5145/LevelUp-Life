@@ -11,7 +11,7 @@
         const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*=\s*([^;]*).*$)|^.*$/, "$1");
         const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-        const response = await fetch("http://127.0.0.1:5000/api/rpg/status", {
+        const response = await fetch("https://levelup-life-3.onrender.com/api/rpg/status", {
         method: "GET",
         credentials: "include",
         headers: {

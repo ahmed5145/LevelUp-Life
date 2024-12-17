@@ -17,7 +17,7 @@ const HabitManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch('http://127.0.0.1:5000/api/habits', {
+      const response = await fetch('https://levelup-life-3.onrender.com/api/habits', {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -46,7 +46,7 @@ const HabitManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch('http://127.0.0.1:5000/api/habits', {
+      const response = await fetch('https://levelup-life-3.onrender.com/api/habits', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -77,7 +77,7 @@ const HabitManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch(`http://127.0.0.1:5000/api/habits/${habitId}`, {
+      const response = await fetch(`https://levelup-life-3.onrender.com/api/habits/${habitId}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -104,7 +104,7 @@ const HabitManager = () => {
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-      const response = await fetch(`http://127.0.0.1:5000/api/rpg/update_habit`, {
+      const response = await fetch(`https://levelup-life-3.onrender.com/api/rpg/update_habit`, {
         method: 'POST',
         credentials: 'include',
         headers: {

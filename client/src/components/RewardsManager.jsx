@@ -15,7 +15,7 @@ const RewardsManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch("http://127.0.0.1:5000/api/rewards", {
+      const response = await fetch("https://levelup-life-3.onrender.com/api/rewards", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -40,7 +40,7 @@ const RewardsManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch("http://127.0.0.1:5000/api/rewards", {
+      const response = await fetch("https://levelup-life-3.onrender.com/api/rewards", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -78,7 +78,7 @@ const RewardsManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch(`http://127.0.0.1:5000/api/rewards/${rewardId}/buy`, {
+      const response = await fetch(`https://levelup-life-3.onrender.com/api/rewards/${rewardId}/buy`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -111,7 +111,7 @@ const RewardsManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch(`http://127.0.0.1:5000/api/rewards/${rewardId}`, {
+      const response = await fetch(`https://levelup-life-3.onrender.com/api/rewards/${rewardId}`, {
         method: "DELETE",
         credentials: "include",
         headers: {

@@ -17,7 +17,7 @@ const TaskManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch('http://127.0.0.1:5000/api/tasks', {
+      const response = await fetch('https://levelup-life-3.onrender.com/api/tasks', {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -44,7 +44,7 @@ const TaskManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch('http://127.0.0.1:5000/api/tasks', {
+      const response = await fetch('https://levelup-life-3.onrender.com/api/tasks', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -75,7 +75,7 @@ const TaskManager = () => {
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-      const response = await fetch(`http://127.0.0.1:5000/api/rpg/update_task`, {
+      const response = await fetch(`https://levelup-life-3.onrender.com/api/rpg/update_task`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -118,7 +118,7 @@ const TaskManager = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch(`http://127.0.0.1:5000/api/tasks/${taskId}`, {
+      const response = await fetch(`https://levelup-life-3.onrender.com/api/tasks/${taskId}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

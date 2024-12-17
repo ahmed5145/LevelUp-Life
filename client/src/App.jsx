@@ -39,7 +39,7 @@ function App() {
 
     if (tokenExists && storedUser) {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/validate", {
+        const response = await axios.get("https://levelup-life-3.onrender.com/api/validate", {
           withCredentials: true,
         });
 
