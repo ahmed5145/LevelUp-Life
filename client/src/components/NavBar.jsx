@@ -4,18 +4,25 @@
   import Navbar from 'react-bootstrap/Navbar';
   import NavDropdown from 'react-bootstrap/NavDropdown';
   import { Link } from 'react-router-dom';
+  
 
   function NavBar({ isLoggedIn, handleLogout, navigate }) {
     const [frame, setFrame] = useState([]);
     const [avatar, setAvatar] = useState([]);
+    const [theme, setTheme] = useState('light');
     const framePath='/assets/frame/';
     const path='/assets/character/';
     useEffect(()=>{
+      document.documentElement.setAttribute('data-theme', theme);
       if (isLoggedIn){
         fetchCurrentNavbarElement();
       }
-    }, [isLoggedIn]);
+    }, [isLoggedIn, theme]);
 
+    const toggleTheme = () => {
+      setTheme(theme === 'light' ? 'dark' : 'light');
+    };
+    
     const fetchCurrentNavbarElement = async () => {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1"); 
@@ -70,6 +77,13 @@
                   </NavDropdown>
                 </>
               )}
+            </Nav>
+            <Nav>
+              <Nav.Link className="ml-2">
+                <button onClick={toggleTheme} className={`bi bi-${theme === 'light' ? 'moon' : 'sun'}`}>
+                  Toggle Theme
+                </button>
+              </Nav.Link>
             </Nav>
             <Nav>
               

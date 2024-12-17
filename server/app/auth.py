@@ -17,6 +17,9 @@ from .routes import routes_bp
 from .rpg_routes import rpg_bp
 from .habits_routes import habits_bp
 from datetime import datetime
+from .rewards_routes import rewards_bp
+
+
 
 app = create_app()
 with app.app_context():
@@ -42,6 +45,7 @@ app.register_blueprint(tasks_bp)
 app.register_blueprint(routes_bp)
 app.register_blueprint(rpg_bp)
 app.register_blueprint(habits_bp)
+app.register_blueprint(rewards_bp)
 
 @app.route('/signup', methods=['POST'])
 def signup():
