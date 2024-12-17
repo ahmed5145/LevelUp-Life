@@ -8,16 +8,16 @@ from flask_login import (
     logout_user,
 )
 import requests
-from .config import db, mm, create_app
-from .models import Users
+from config import db, mm, create_app
+from models import Users
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity, get_csrf_token, set_access_cookies
 from flask_cors import CORS
-from .tasks_routes import tasks_bp
-from .routes import routes_bp
-from .rpg_routes import rpg_bp
-from .habits_routes import habits_bp
+from tasks_routes import tasks_bp
+from routes import routes_bp
+from rpg_routes import rpg_bp
+from habits_routes import habits_bp
 from datetime import datetime
-from .rewards_routes import rewards_bp
+from rewards_routes import rewards_bp
 
 
 

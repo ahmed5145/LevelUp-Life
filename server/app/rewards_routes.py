@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from .models import Rewards, RewardsSchema, Users, db
+from models import Rewards, RewardsSchema, Users, db
 from flask_cors import CORS
 
 rewards_bp = Blueprint('rewards', __name__, url_prefix='/api/rewards')

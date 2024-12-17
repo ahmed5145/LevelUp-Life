@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from .models import Habits, HabitsSchema, Users, db
+from models import Habits, HabitsSchema, Users, db
 from sqlalchemy.orm import joinedload
 from flask_cors import CORS
 

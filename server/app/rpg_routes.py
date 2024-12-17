@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from .models import Users, Habits, db, Tasks
+from models import Users, Habits, db, Tasks
 import math
 
 rpg_bp = Blueprint('rpg', __name__, url_prefix='/api/rpg')
