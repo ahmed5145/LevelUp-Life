@@ -38,8 +38,6 @@ class Tasks(db.Model):
     title= db.Column(db.String, nullable=False)
     description= db.Column(db.String)
     difficulty= db.Column(db.Integer, default=1)
-    # Give a default of 1. Difficulty range from 1-5 and the more difficult the task, more the coins given out
-    # Need to implement logic while accumulating gold where it checks what difficulty the task is
     status= db.Column(db.Boolean, default=False)
 
     def __repr__(self) -> str:
@@ -82,5 +80,3 @@ class RewardsSchema(mm.SQLAlchemyAutoSchema):
     class Meta:
         model = Rewards
         include_fk = True
-
-

@@ -42,3 +42,11 @@
 .progress{
   margin: 2px;
 }
+
+.good{ 
+  background-color: rgb(111 163 134) !important;
+}
+
+.bad{ 
+  background-color: burlywood !important;
+}

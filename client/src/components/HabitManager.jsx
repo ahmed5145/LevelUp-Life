@@ -188,7 +188,7 @@ const HabitManager = () => {
           habits.map((habit) => (
             <div
               key={habit.id}
-              className={`habit bg-white p-4 rounded shadow ${habit.status ? 'opacity-50' : ''}`}
+              className={`habit bg-white p-4 my-2 rounded shadow ${habit.status ? 'opacity-50' : ''} ${habit.good_or_bad}`}
             >
               <h3 className="text-lg font-semibold">{habit.title}</h3>
               <p className="text-sm mb-2">Nature: {habit.good_or_bad === 'good' ?'Good' : 'Bad'}</p>

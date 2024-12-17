@@ -190,7 +190,7 @@ const TaskManager = () => {
         {tasks.map(task => (
           <div 
             key={task.id} 
-            className={`task bg-white p-4 rounded shadow ${task.status ? 'opacity-50' : ''}`}
+            className={`task bg-white p-4 my-2 rounded shadow ${task.status ? 'opacity-50' : ''}`}
           >
             <h3 className="text-lg font-semibold">{task.title}</h3>
             <p className="text-gray-600 mb-2">{task.description}</p>

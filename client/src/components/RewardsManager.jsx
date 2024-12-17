@@ -168,7 +168,7 @@ const RewardsManager = () => {
       {/* Reward List */}
       <div className="reward-list space-y-4">
         {rewards.map((reward) => (
-          <div key={reward.id} className="reward bg-white p-4 rounded shadow">
+          <div key={reward.id} className="reward bg-white p-4 my-2 rounded shadow">
             <h3 className="text-lg font-semibold">{reward.title}</h3>
             <p className="text-gray-600 mb-2">Price: {reward.price} coins</p>
             <div className="flex space-x-2">
