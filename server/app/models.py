@@ -69,18 +69,18 @@ class HabitsSchema(mm.SQLAlchemyAutoSchema):
         include_fk= True
 
 class Rewards(db.Model):
-    id= db.Column(db.Integer, primary_key=True)
-    user_id= db.Column(db.Integer, db.ForeignKey("users.id"))
-    title= db.Column(db.String, nullable=False)
-    price= db.Column(db.Integer, nullable= False)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    title = db.Column(db.String, nullable=False)
+    price = db.Column(db.Integer, nullable=False)
 
     def __repr__(self) -> str:
-        return f"<Rewards(reward={self.title!r})>"
+        return f"<Reward(title={self.title!r}, price={self.price})>"
 
 class RewardsSchema(mm.SQLAlchemyAutoSchema):
     """Rewards schema"""
     class Meta:
         model = Rewards
-        include_fk= True
+        include_fk = True
 
 

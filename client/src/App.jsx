@@ -15,6 +15,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import HabitManager from "./components/HabitManager";
+import RewardsManager from "./components/RewardsManager";
 
 function App() {
   const cId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -131,7 +132,7 @@ function App() {
                       </Col>
                       <Col>
                         <div>
-                          <h2>3rd One One</h2>
+                        <RewardsManager />
                         </div>
                       </Col>
                     </Row>
