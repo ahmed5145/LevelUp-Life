@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleLogin from './GoogleLogin';
 import TaskManager from './components/TaskManager';
@@ -9,6 +8,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate, createBrowserRoute
 import GetCharacter from './components/Characters';
 import NavBar from './components/NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 import Status from "./components/status";
 import axios from "axios";
 import Container from 'react-bootstrap/Container';
@@ -16,12 +16,17 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import HabitManager from "./components/HabitManager";
 import RewardsManager from "./components/RewardsManager";
+import { useStatus } from './components/StatusContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const cId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const {resetStatus} = useStatus();
+  const {fetchStatus} = useStatus();
 
   useEffect(() => {
     checkAccessToken();
@@ -39,6 +44,7 @@ function App() {
         });
 
         if (response.status === 200) {
+          await fetchStatus();
           setIsLoggedIn(true);
           setUser(JSON.parse(storedUser));
         }
@@ -63,8 +69,10 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = (response) => {
+  const handleLoginSuccess = async (response) => {
+
     if (response) {
+      await fetchStatus();
       setUser(response);
     } else {
       setUser(null);
@@ -84,6 +92,7 @@ function App() {
     setUser(null);
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("user");
+    resetStatus();
     navigate("/");
   };
 
@@ -127,7 +136,7 @@ function App() {
                       </Col>
                       <Col>
                         <div>
-                          <HabitManager />
+                          <HabitManager />  
                         </div>
                       </Col>
                       <Col>
@@ -137,6 +146,7 @@ function App() {
                       </Col>
                     </Row>
                   </Container>
+                  <ToastContainer />
 
                   
                 </>

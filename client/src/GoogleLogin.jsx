@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useGoogleLogin } from '@react-oauth/google';
+import React from "react";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useStatus } from "./components/StatusContext";
 
-async function getUserInfo(responseCode) {
+async function getUserInfo(responseCode, fetchStatus) {
   try {
     const response = await fetch("http://127.0.0.1:5000/google/login", {
       method: "POST",
-      credentials: 'include',
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -17,7 +18,12 @@ async function getUserInfo(responseCode) {
       console.error("Error response from backend:", error);
       return null;
     }
-    return await response.json();
+
+    const userInfo = await response.json();
+    // Call fetchstatus after you get user info
+    await fetchStatus();
+
+    return userInfo;
   } catch (error) {
     console.error("Error fetching user info: ", error);
     return null;
@@ -25,21 +31,18 @@ async function getUserInfo(responseCode) {
 }
 
 export default function GoogleLogin({ onLoginSuccess }) {
+  const { fetchStatus } = useStatus();
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (responseCode) => {
-      const loginDetails = await getUserInfo(responseCode);
+      const loginDetails = await getUserInfo(responseCode, fetchStatus);
       if (loginDetails) {
         onLoginSuccess(loginDetails.user);
-      } else{
-        console.error("Failed to retrieve user")
+      } else {
+        console.error("Failed to retrieve user");
       }
     },
   });
 
-  return (
-    <>
-    <button onClick={googleLogin}>Google Login</button>
-    </>
-  );
+  return <button onClick={googleLogin}>Google Login</button>;
 }

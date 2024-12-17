@@ -116,7 +116,7 @@ export default function GetCharacter() {
             <Card.Img
               variant="top"
               src={`${path}${avatar}`}
-              height="150px"
+              height="185px"
             />
             <Card.Body>
               <Button

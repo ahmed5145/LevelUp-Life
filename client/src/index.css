@@ -1,7 +1,5 @@
 /* Base styles for light and dark themes */
 :root {
-  --primary-bg: #ffffff;
-  --secondary-bg: #f9f9f9;
   --text-color: #213547;
   --button-bg: #007bff;
   --button-hover-bg: #0056b3;
@@ -17,15 +15,11 @@
   --border-color: #444;
 }
 
-body {
-  background-color: var(--primary-bg);
-  color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
 
 button {
   background-color: var(--button-bg);
   color: var(--primary-bg);
+  margin: 3px;
 }
 
 button:hover {

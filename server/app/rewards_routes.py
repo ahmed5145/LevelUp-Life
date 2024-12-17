@@ -67,7 +67,10 @@ def buy_reward(reward_id):
     user.coins -= reward.price
     db.session.commit()
 
-    return jsonify({"message": f"Reward '{reward.title}' purchased!", "coins": user.coins}), 200
+    return jsonify({
+        "message": f"Reward '{reward.title}' purchased!", 
+        "coins": user.coins,
+        }), 200
 
 # Delete a reward
 @rewards_bp.route('/<int:reward_id>', methods=['DELETE'])

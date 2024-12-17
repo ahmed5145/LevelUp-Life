@@ -9,11 +9,6 @@ rpg_bp = Blueprint('rpg', __name__, url_prefix='/api/rpg')
 XP_PER_LEVEL = 100
 MAX_HP = 100
 
-def set_level_xp(current_xp):
-    global XP_PER_LEVEL
-    if current_xp >= XP_PER_LEVEL:
-        XP_PER_LEVEL = math.floor(XP_PER_LEVEL * 1.25)
-    return XP_PER_LEVEL
 
 
 @rpg_bp.route('/status', methods=['GET'])
@@ -33,7 +28,8 @@ def get_status():
         "level": user.level,
         "xp": user.xp,
         "coins": user.coins,
-        "hp": user.hp
+        "hp": user.hp,
+        "frame": user.frame,
     }), 200
 
 @rpg_bp.route('/update_task', methods=['POST'])
@@ -70,14 +66,8 @@ def update_task():
     # Check if user levels up
     if user.xp >= XP_PER_LEVEL:
         user.level = user.level + 1
-        set_level_xp(user.xp)
         user.xp= 0
-        if user.level % 10 == 0:
-            get_frame= user.frame
-            get_frame= get_frame.split('-')
-            frame_tier= int(get_frame[0]) + 1
-            new_frame= str(frame_tier) + '-'+ get_frame[1]
-            user.frame= new_frame
+        user.frame= get_frame_for_level(user.level)
         user.coins += 50  # Level-up reward
     
     db.session.delete(task)
@@ -87,6 +77,8 @@ def update_task():
         "xp": user.xp,
         "level": user.level,
         "hp": user.hp,
+        "coins": user.coins,
+        "frame": user.frame,
     }), 200
 
 @rpg_bp.route('/update_habit', methods=['POST'])
@@ -100,7 +92,6 @@ def update_habit():
         return jsonify({"error": "User not found"}), 404
 
     data = request.get_json()
-    print(data)
     habit_id = data.get('habit_id')
     is_good = data.get('good_or_bad')
 
@@ -110,7 +101,7 @@ def update_habit():
     if not habit:
         return jsonify({"error": "Habit not found"}), 404
     
-    difficulty_multiplier = 1  # Habits have no difficulty multiplier
+    difficulty_multiplier = 1  # Habits have a multiplier on the basis of streak
     xp_reward = 10 * difficulty_multiplier
     coin_reward = 5 * difficulty_multiplier
     hp_penalty = 10 * difficulty_multiplier
@@ -130,19 +121,14 @@ def update_habit():
             user.level= max(user.level-1, 1)
             user.coin = max(user.coins - coin_penalty, 0)
         user.coins = max(user.coins - coin_penalty, 0)
+    user.frame= get_frame_for_level(user.level)
     habit.streak += 1
 
     # Check if user levels up
     if user.xp >= XP_PER_LEVEL:
         user.level += 1
-        set_level_xp(user.xp)
         user.xp= 0
-        if user.level % 10 == 0:
-            get_frame= user.frame
-            get_frame= get_frame.split('-')
-            frame_tier= int(get_frame[0]) + 1
-            new_frame= str(frame_tier) + '-'+ get_frame[1]
-            user.frame= new_frame
+        user.frame= get_frame_for_level(user.level)
         user.coins += 50  # Level-up reward
 
     db.session.commit()
@@ -152,5 +138,11 @@ def update_habit():
         "level": user.level,
         "coins": user.coins,
         "hp": user.hp,
-        "streak": habit.streak
+        "streak": habit.streak,
+        "frame": user.frame,
     }), 200
+
+def get_frame_for_level(level):
+    frame_tier= (level//5)  + 1
+    frame_tier = min(frame_tier, 10)
+    return f"{frame_tier}-Frame.png"

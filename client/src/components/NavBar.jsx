@@ -1,9 +1,10 @@
-  import { useEffect, useState } from 'react';
-  import Container from 'react-bootstrap/Container';
-  import Nav from 'react-bootstrap/Nav';
-  import Navbar from 'react-bootstrap/Navbar';
-  import NavDropdown from 'react-bootstrap/NavDropdown';
-  import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import { Link } from 'react-router-dom';
+import {useStatus} from './StatusContext';
   
 
   function NavBar({ isLoggedIn, handleLogout, navigate }) {
@@ -12,6 +13,8 @@
     const [theme, setTheme] = useState('light');
     const framePath='/assets/frame/';
     const path='/assets/character/';
+    const {status} = useStatus();
+
     useEffect(()=>{
       document.documentElement.setAttribute('data-theme', theme);
       if (isLoggedIn){
@@ -98,7 +101,7 @@
                         id='nav-avatar'
                         className="avatar-image"/>
                     <img
-                        src={`${framePath}${frame}`}
+                        src={`${framePath}${status.frame}`}
                         alt="Frame"
                         className="frame-image"/>
                     </div>

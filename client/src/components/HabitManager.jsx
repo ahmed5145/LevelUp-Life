@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useStatus } from './StatusContext';
+import { toast } from 'react-toastify';
 
 const HabitManager = () => {
   const [habits, setHabits] = useState([]); // Initialize as empty array
   const [highlightedHabit, setHighlightedHabit] = useState({});
   const [newHabit, setNewHabit] = useState({ title: '', good_or_bad: 'good' });
   const [error, setError] = useState(null);
+  const {updateStatus} = useStatus();
 
   useEffect(() => {
     fetchHabits();
@@ -32,7 +35,6 @@ const HabitManager = () => {
   
       // Normalize good_or_bad to boolean
       setHabits(data);
-      console.log(data);
     } catch (error) {
       console.error('Error fetching habits:', error);
       setError('Failed to fetch habits. Please try again.');
@@ -112,16 +114,28 @@ const HabitManager = () => {
         },
         body: JSON.stringify({ habit_id: habitId, good_or_bad: good_or_bad }),
       });
-
       if (!response.ok) {
         throw new Error('Failed to update habit');
       }
 
       const result = await response.json();
-      alert(
-        `Habit updated! XP: ${result.xp}, Coins: ${result.coins}, HP: ${result.hp}, Streak: ${result.streak}`
-      );
+      updateStatus({
+        xp: result.xp,
+        hp: result.hp,
+        coins: result.coins,
+        level: result.level,
+        frame: result.frame,
+      });
 
+      toast.info(`Habit completed! xp: ${result.xp}, coins: ${result.coins}, hp: ${result.hp}, streak: ${result.streak}`, {
+        position: "top-left",
+        autoClose: 5000, 
+        hideProgressBar: true,
+        closeOnClick: true, 
+        draggable: false,
+        theme: 'dark',
+      });
+      
       // Highlight the habit
       setHighlightedHabit({ ...highlightedHabit, [habitId]: good_or_bad ? 'good' : 'bad' });
 

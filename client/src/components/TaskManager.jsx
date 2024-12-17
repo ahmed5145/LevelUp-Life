@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge } from "react-bootstrap";
+import { useStatus } from './StatusContext';
+import { toast } from 'react-toastify';
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({ title: '', description: '', difficulty: 1 });
   const [error, setError] = useState(null);
+  const {updateStatus} = useStatus();
 
   useEffect(() => {
     fetchTasks();
@@ -87,9 +90,22 @@ const TaskManager = () => {
         throw new Error("Failed to complete task");
       }
       const result= await response.json();
-      alert(
-        `Task completed! XP: ${result.xp}, HP: ${result.hp}`
-      );
+      updateStatus({
+        xp: result.xp,
+        hp: result.hp,
+        coins: result.coins,
+        level: result.level,
+        frame: result.frame,
+      });
+
+      toast.success(`Task completed! xp: ${result.xp}, hp: ${result.hp}`, {
+        position: "top-right",
+        autoClose: 5000, 
+        hideProgressBar: true,
+        closeOnClick: true, 
+        pauseOnHover: true,
+        draggable: false,
+      });
       
       fetchTasks(); // Refresh tasks after completion
     } catch (error) {

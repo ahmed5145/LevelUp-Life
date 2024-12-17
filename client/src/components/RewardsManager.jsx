@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useStatus } from "./StatusContext"; // Import StatusContext
+import { toast } from "react-toastify";
 
 const RewardsManager = () => {
-  const [rewards, setRewards] = useState([]); // List of rewards
+  const { status, setStatus, error, setError, fetchStatus } = useStatus(); // Use status and fetchStatus from context
   const [newReward, setNewReward] = useState({ title: "", price: 0 }); // Reward form state
-  const [coins, setCoins] = useState(0); // User coins
-  const [error, setError] = useState(null);
+  const [rewards, setRewards] = useState([]); // List of rewards
 
   useEffect(() => {
-    fetchRewards();
-    fetchCoins();
+    fetchRewards(); // Fetch rewards on component mount
   }, []);
 
   const fetchRewards = async () => {
@@ -32,29 +32,6 @@ const RewardsManager = () => {
     } catch (error) {
       console.error("Error fetching rewards:", error);
       setError("Failed to fetch rewards.");
-    }
-  };
-
-  const fetchCoins = async () => {
-    try {
-      const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token_cookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrf_access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      const response = await fetch("http://127.0.0.1:5000/api/rpg/status", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          "X-CSRF-TOKEN": csrfToken,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch coins");
-
-      const data = await response.json();
-      setCoins(data.coins);
-    } catch (error) {
-      console.error("Error fetching coins:", error);
     }
   };
 
@@ -86,8 +63,15 @@ const RewardsManager = () => {
   };
 
   const handleBuyReward = async (rewardId, price) => {
-    if (coins < price) {
-      alert("Not enough coins!");
+    if (status.coins < price) {
+      toast.warning(`Not enough coins`, {
+        position: "top-left",
+        autoClose: 5000, 
+        hideProgressBar: true,
+        closeOnClick: true, 
+        draggable: false,
+        theme: 'colored',
+      });
       return;
     }
 
@@ -107,8 +91,16 @@ const RewardsManager = () => {
       if (!response.ok) throw new Error("Failed to buy reward");
 
       const data = await response.json();
-      setCoins(data.coins);
-      alert("Reward purchased!");
+      setStatus({ ...status, coins: data.coins }); // Update coins in StatusContext
+      toast.success(`Reward purchased`, {
+        position: "top-left",
+        autoClose: 5000, 
+        hideProgressBar: true,
+        closeOnClick: true, 
+        draggable: false,
+        theme: 'colored',
+      });
+      
     } catch (error) {
       console.error("Error buying reward:", error);
       setError("Failed to purchase reward.");
@@ -141,7 +133,7 @@ const RewardsManager = () => {
   return (
     <div className="rewards-manager p-4 bg-gray-100">
       <h2 className="text-2xl font-bold mb-4">My Rewards</h2>
-      <p className="mb-4">Coins: {coins}</p>
+      <p>Gold <img src="/assets/coin/coin 2.png" height="30px" width="30px"></img> {status.coins}</p>
 
       {error && (
         <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">{error}</div>
